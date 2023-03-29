@@ -127,8 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Pycharm idea folder
+.idea/
+
+# sqlite db
 *.db
-
-
-
-
