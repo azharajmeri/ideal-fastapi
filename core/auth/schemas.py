@@ -1,6 +1,9 @@
+from typing import Union
+
 from pydantic import BaseModel, Field, EmailStr
 
 from core.constants import PASSWORD_REGEX
+from core.response_models.auth_response_model import ResponseMessage
 
 
 class UserRegistrationRequestSchema(BaseModel):
@@ -14,3 +17,20 @@ class UserRegistrationRequestSchema(BaseModel):
 
     class Config:
         extra = "forbid"
+
+
+class UserRegistrationResponseData(BaseModel):
+    """
+    Response schema for user registration.
+    """
+    id: str
+    first_name: str
+    last_name: str
+    email: str
+
+    class Config:
+        orm_mode = True
+
+
+class UserRegistrationResponse(ResponseMessage):
+    data: Union[UserRegistrationResponseData, None]

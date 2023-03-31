@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from starlette import status
 from starlette.responses import Response
 
-from core.auth.schemas import UserRegistrationRequestSchema
+from core.auth.schemas import UserRegistrationRequestSchema, UserRegistrationResponse
 from core.auth.services import register
 from core.constants import REGISTER_SUMMARY
 from core.response_models.auth_response_model import AuthenticationResponseModel
@@ -17,9 +17,9 @@ user_router = APIRouter(
 _auth_response_model = AuthenticationResponseModel()
 
 
-@auth_router.post("/api/register", status_code=status.HTTP_201_CREATED, response_model=AuthenticationResponseModel,
-             summary=REGISTER_SUMMARY,
-             responses=_auth_response_model.register_response_model())
+@auth_router.post("/api/register", status_code=status.HTTP_201_CREATED, response_model=UserRegistrationResponse,
+                  summary=REGISTER_SUMMARY,
+                  responses=_auth_response_model.register_response_model())
 async def register_user(request: UserRegistrationRequestSchema, response: Response):
     """
     Endpoint for user registration.

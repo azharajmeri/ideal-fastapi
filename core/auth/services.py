@@ -20,27 +20,16 @@ async def register(request: UserRegistrationRequestSchema, response: Response):
     the database, and returns a `UserRegistrationResponse` indicating the result of the registration.
 
     :param request: The user registration request data, including the email and password.
-    :param db_interface: An instance of the database interface, used to create the new user in the database.
     :return: A response indicating the result of the user registration request.
     :raises: ValueError: If the email address or password is invalid.
              Exception: If an error occurs while creating the user in the database.
     """
     data, message = None, ""
-    try:
-        request_data = convert_data_into_json(request)
-        email_filter_list = [User.email == request_data.get("email")]
-        if _ := db_interface.get_single_item_by_filters(email_filter_list):
-            raise ExistsError(ERR_MSG_USER_ALREADY_EXIST)
-        request_data["password"] = _hasher.get_password_hash(request_data.get("password"))
-        data = db_interface.create_with_uuid(data=request_data)
-        message = "User Register Successfully."
-    except SQLAlchemyError as err:
-        message = str(err)
-        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-    except BadRequestException as err:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        message = err.msg
-    except Exception as err:
-        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
-        message = str(err)
+    request_data = convert_data_into_json(request)
+    email_filter_list = [User.email == request_data.get("email")]
+    # if _ := db_interface.get_single_item_by_filters(email_filter_list):
+    #     raise ExistsError(ERR_MSG_USER_ALREADY_EXIST)
+    # request_data["password"] = _hasher.get_password_hash(request_data.get("password"))
+    # data = db_interface.create_with_uuid(data=request_data)
+    # message = "User Register Successfully."
     return {"message": message, "data": data}
