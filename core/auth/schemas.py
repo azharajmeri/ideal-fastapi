@@ -34,3 +34,26 @@ class UserRegistrationResponseData(BaseModel):
 
 class UserRegistrationResponse(ResponseMessage):
     data: Union[UserRegistrationResponseData, None]
+
+
+class UserLoginResponseData(BaseModel):
+    """
+    Response schema for user login.
+    """
+    access_token: str
+    refresh_token: str
+
+
+class UserLoginResponse(ResponseMessage):
+    data: Union[UserLoginResponseData, None]
+
+
+class UserLoginRequest(BaseModel):
+    """
+    Request schema for user login.
+    """
+    email: EmailStr
+    password: str
+
+    class Config:
+        extra = "forbid"

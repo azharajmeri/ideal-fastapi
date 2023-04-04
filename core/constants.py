@@ -1,3 +1,8 @@
 REGISTER_SUMMARY = "User Registration"
+LOGIN_SUMMARY = "User Login"
 PASSWORD_REGEX = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{8,12}$"
 ERR_MSG_USER_ALREADY_EXIST = "user with this email already exists."
+USER_REGISTRATION_SUCCESS = "User Register Successfully."
+USER_LOGIN_SUCCESS = "User Login Successfully."
+ERR_EMAIL_INCORRECT = "please enter valid email!"
+ERR_PASSWORD_INCORRECT = "incorrect password"

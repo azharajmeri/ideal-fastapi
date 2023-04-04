@@ -31,3 +31,6 @@ class AuthenticationResponseModel:
 
     def register_response_model(self):
         return self.common_response_messages()
+
+    def login_response_model(self):
+        return self.common_response_messages()

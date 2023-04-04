@@ -1,10 +1,11 @@
 from sqlalchemy import Boolean, Column, String
 
 from core.database.core import Base
+from core.database.manager import QueryManager
 from core.models import TimeStampMixin
 
 
-class User(Base, TimeStampMixin):
+class User(Base, TimeStampMixin, QueryManager):
     """
     Model for storing user information.
 
