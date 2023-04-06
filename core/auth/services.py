@@ -49,7 +49,35 @@ def login(request: UserLoginRequest, session: Session):
     credentials against the database, and returns a `UserLoginResponse` indicating the result of the login.
 
     Parameters:
-        request : The user login request data, including the email and password.
+        request : The user OTP verification request data, including the UID and OTP.
+
+    Returns:
+        A response indicating the result of the user login request.
+
+    Raises:
+        ValueError : If the email address or password is invalid.
+        BadRequestException : if the email or password are not as per the requirement.
+    """
+    request_data = convert_data_into_json(request)
+    if not (user_object := User.get_single_item_by_filters([User.email == request_data.get("email")], session)):
+        raise BadRequestException(ERR_EMAIL_INCORRECT)
+    if not _hasher.verify_password(request_data.get("password"), user_object.password):
+        raise BadRequestException(ERR_PASSWORD_INCORRECT)
+    access_token = jwt_authentication.create_access_token(payload={"sub": user_object.email})
+    refresh_token = jwt_authentication.create_refresh_token(payload={"sub": user_object.email})
+    data = {"access_token": access_token, "refresh_token": refresh_token}
+    return {"message": USER_LOGIN_SUCCESS, "data": data}
+
+
+def verify_otp_service(request: UserLoginRequest, session: Session):
+    """
+    Login an existing user.
+    This function is used to log in an existing user in the application. It takes a `UserLoginRequest` instance as
+    input, which contains the user's email and password. The function validates the input, checks the user's
+    credentials against the database, and returns a `UserLoginResponse` indicating the result of the login.
+
+    Parameters:
+        request : The user OTP verification request data, including the UID and OTP.
 
     Returns:
         A response indicating the result of the user login request.

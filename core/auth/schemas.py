@@ -57,3 +57,14 @@ class UserLoginRequest(BaseModel):
 
     class Config:
         extra = "forbid"
+
+
+class UserVerifyOTPRequest(BaseModel):
+    """
+    Request schema for user otp verification.
+    """
+    uid: str
+    otp: str
+
+    class Config:
+        extra = "forbid"

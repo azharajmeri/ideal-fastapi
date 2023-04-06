@@ -1,14 +1,13 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from starlette import status
-from starlette.responses import Response
 
 from core.auth.schemas import UserRegistrationRequestSchema, UserRegistrationResponse, UserLoginResponse, \
-    UserLoginRequest
-from core.auth.services import register, login
+    UserLoginRequest, UserVerifyOTPRequest
+from core.auth.services import register, login, verify_otp_service
 from core.constants import REGISTER_SUMMARY, LOGIN_SUMMARY
 from core.database.core import get_db
-from core.response_models.auth_response_model import AuthenticationResponseModel
+from core.response_models.auth_response_model import AuthenticationResponseModel, ResponseMessage
 
 auth_router = APIRouter(
     tags=["Authentication"],
@@ -72,3 +71,32 @@ def api_user_login(request: UserLoginRequest, session: Session = Depends(get_db)
             If any required fields are missing from the request or if the provided email and password do not match any existing user account.
     """
     return login(request, session)
+
+
+@auth_router.post("/api/login", status_code=status.HTTP_200_OK, response_model=ResponseMessage,
+                  summary=LOGIN_SUMMARY, responses=_auth_response_model.login_response_model())
+def api_verify_otp(request: UserVerifyOTPRequest, session: Session = Depends(get_db)):
+    """
+    Verify an OTP for a given email.
+    This endpoint verifies the provided OTP against the one generated for the given email address.
+    If the OTP is valid, it returns a success message with a status code of 200. If the OTP is
+    invalid or has expired, it returns an error message with a status code of 400.
+
+    Parameters:
+
+        request :
+            The incoming request object containing the user's email and password.
+        session : Session
+            A SQLAlchemy Session object used to interact with the database.
+
+    Returns:
+
+        JSON response containing a response message.
+
+    Raises:
+
+         HTTPException :
+            If any required fields are missing from the request or if the provided email
+            match any existing user account.
+    """
+    return verify_otp_service(request, session)

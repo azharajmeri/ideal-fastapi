@@ -1,5 +1,8 @@
+import base64
+from binascii import Error as BinasciiError
 from datetime import timedelta, datetime, timezone
 
+import pyotp as pyotp
 from jose import jwt
 from passlib.context import CryptContext
 from starlette import status
@@ -100,3 +103,46 @@ class JWTAuthenticator:
         refresh_token_expires = timedelta(minutes=app_config.REFRESH_TOKEN_EXPIRE_MINUTES)
         return self.create_token(payload=payload, secret_key=app_config.REFRESH_TOKEN_SECRET_KEY,
                                  expires_delta=refresh_token_expires)
+
+
+def urlsafe_base64_encode(s):
+    """
+    Encode a bytestring to a base64 string for use in URLs. Strip any trailing
+    equal signs.
+    """
+    return base64.urlsafe_b64encode(s).rstrip(b"\n=").decode("ascii")
+
+
+def urlsafe_base64_decode(s):
+    """
+    Decode a base64 encoded string. Add back any trailing equal signs that
+    might have been stripped.
+    """
+    s = s.encode()
+    try:
+        return base64.urlsafe_b64decode(s.ljust(len(s) + len(s) % 4, b"="))
+    except (LookupError, BinasciiError) as e:
+        raise ValueError(e) from e
+
+
+def generate_otp(user_id: str, secret_key: str) -> str:
+    # generate a token by encoding the user's id and adding a secret component
+    email_secret = user_id+secret_key
+    email_secret_base32 = base64.b32encode(email_secret.encode('utf-8')).decode('utf-8')
+
+    # create a TOTP object with a 60-second validity period
+    totp = pyotp.TOTP(email_secret_base32, interval=70)
+
+    # generate and return a 6-digit OTP
+    return totp.now()
+
+
+def verify_otp(user_id: str, secret_key: str, otp: str) -> bool:
+    # generate a token by encoding the user's id and adding a secret component
+    email_secret = user_id+secret_key
+    email_secret_base32 = base64.b32encode(email_secret.encode('utf-8')).decode('utf-8')
+
+    # create a TOTP object with a 60-second validity period
+    totp = pyotp.TOTP(email_secret_base32, interval=70)
+
+    return totp.verify(otp)
