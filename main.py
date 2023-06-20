@@ -1,12 +1,14 @@
 import uvicorn
 from fastapi import FastAPI
 from sqlalchemy.orm import scoped_session
+from starlette import status
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import Response, JSONResponse
 
+from core.auth.views import auth_router
 from core.config import app_config
 from core.database.core import SessionLocal, Base, engine
-from core.auth import models
+from core.exceptions import ExistsError, BadRequestException
 
 app = FastAPI()
 
@@ -23,9 +25,33 @@ async def db_session_middleware(request: Request, call_next):
         session = scoped_session(SessionLocal)
         request.state.db = session()
         response = await call_next(request)
+    except:
+        request.state.db.rollback()
+        raise
     finally:
+        request.state.db.commit()
         request.state.db.close()
     return response
+
+
+@app.exception_handler(ExistsError)
+async def already_exists_handler(request, exc):
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={'message': str(exc)}
+    )
+
+
+@app.exception_handler(BadRequestException)
+async def bad_request_handler(request, exc):
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={'message': str(exc)}
+    )
+
+
+"""Initialized routers"""
+app.include_router(auth_router)
 
 
 if __name__ == "__main__":

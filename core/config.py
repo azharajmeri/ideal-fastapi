@@ -23,6 +23,16 @@ class Config(BaseSettings):
     FASTAPI_LOG_LEVEL: str
     DATABASE_URL: str
 
+    ACCESS_TOKEN_SECRET_KEY: str
+    REFRESH_TOKEN_SECRET_KEY: str
+    FORGOT_PASSWORD_TOKEN_SECRET_KEY: str
+    JWT_ALGORITHM: str
+    REFRESH_TOKEN_EXPIRE_MINUTES: int
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    FORGOT_PASSWORD_EXPIRE_MINUTES: int
+
+    PYOTP_SECRET_KEY: str
+
     class Config:
         env_nested_delimiter = '__'
         env_file = ".env"
