@@ -125,24 +125,36 @@ def urlsafe_base64_decode(s):
         raise ValueError(e) from e
 
 
-def generate_otp(user_id: str, secret_key: str) -> str:
+def generate_otp(user_id: str, secret_key: str = app_config.PYOTP_SECRET_KEY) -> str:
     # generate a token by encoding the user's id and adding a secret component
-    email_secret = user_id+secret_key
-    email_secret_base32 = base64.b32encode(email_secret.encode('utf-8')).decode('utf-8')
+    user_secret = user_id.replace("-", "") + secret_key
+
+    # Convert string to bytes using UTF-8 encoding
+    secret_bytes = user_secret.encode("utf-8")
+
+    # Encode bytes using base32 encoding
+    user_secret_base32 = base64.b32encode(secret_bytes)
+    user_secret_base32_str = user_secret_base32.decode("utf-8")
 
     # create a TOTP object with a 60-second validity period
-    totp = pyotp.TOTP(email_secret_base32, interval=70)
+    totp = pyotp.TOTP(user_secret_base32_str, interval=70)
 
     # generate and return a 6-digit OTP
     return totp.now()
 
 
-def verify_otp(user_id: str, secret_key: str, otp: str) -> bool:
+def verify_otp(user_id: str, otp: str, secret_key: str = app_config.PYOTP_SECRET_KEY) -> bool:
     # generate a token by encoding the user's id and adding a secret component
-    email_secret = user_id+secret_key
-    email_secret_base32 = base64.b32encode(email_secret.encode('utf-8')).decode('utf-8')
+    user_secret = user_id.replace("-", "") + secret_key
+
+    # Convert string to bytes using UTF-8 encoding
+    secret_bytes = user_secret.encode("utf-8")
+
+    # Encode bytes using base32 encoding
+    user_secret_base32 = base64.b32encode(secret_bytes)
+    user_secret_base32_str = user_secret_base32.decode("utf-8")
 
     # create a TOTP object with a 60-second validity period
-    totp = pyotp.TOTP(email_secret_base32, interval=70)
+    totp = pyotp.TOTP(user_secret_base32_str, interval=70)
 
     return totp.verify(otp)

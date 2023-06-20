@@ -31,6 +31,8 @@ class Config(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     FORGOT_PASSWORD_EXPIRE_MINUTES: int
 
+    PYOTP_SECRET_KEY: str
+
     class Config:
         env_nested_delimiter = '__'
         env_file = ".env"

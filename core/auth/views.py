@@ -5,7 +5,7 @@ from starlette import status
 from core.auth.schemas import UserRegistrationRequestSchema, UserRegistrationResponse, UserLoginResponse, \
     UserLoginRequest, UserVerifyOTPRequest
 from core.auth.services import register, login, verify_otp_service
-from core.constants import REGISTER_SUMMARY, LOGIN_SUMMARY
+from core.constants import REGISTER_SUMMARY, LOGIN_SUMMARY, OTP_VERIFICATION_SUMMARY
 from core.database.core import get_db
 from core.response_models.auth_response_model import AuthenticationResponseModel, ResponseMessage
 
@@ -73,8 +73,8 @@ def api_user_login(request: UserLoginRequest, session: Session = Depends(get_db)
     return login(request, session)
 
 
-@auth_router.post("/api/login", status_code=status.HTTP_200_OK, response_model=ResponseMessage,
-                  summary=LOGIN_SUMMARY, responses=_auth_response_model.login_response_model())
+@auth_router.post("/api/verify/otp", status_code=status.HTTP_200_OK, response_model=ResponseMessage,
+                  summary=OTP_VERIFICATION_SUMMARY, responses=_auth_response_model.otp_verification_response_model())
 def api_verify_otp(request: UserVerifyOTPRequest, session: Session = Depends(get_db)):
     """
     Verify an OTP for a given email.

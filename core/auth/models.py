@@ -27,4 +27,4 @@ class User(Base, TimeStampMixin, QueryManager):
     last_name = Column(String(255))
     email = Column(String(255), unique=True)
     password = Column(String(255))
-    is_active = Column(Boolean, default=True)
+    is_active = Column(Boolean, default=False)

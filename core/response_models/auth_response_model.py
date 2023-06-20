@@ -34,3 +34,6 @@ class AuthenticationResponseModel:
 
     def login_response_model(self):
         return self.common_response_messages()
+
+    def otp_verification_response_model(self):
+        return self.common_response_messages()
